@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { DndContext, DragOverlay, closestCorners, pointerWithin } from '@dnd-kit/core';
+import { DndContext, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import Column from './components/Column';
 import TaskCard from './components/TaskCard';
@@ -16,6 +16,10 @@ export default function App() {
   const [taskModal, setTaskModal] = useState(null);
   const [sprintModal, setSprintModal] = useState(false);
   const [activeTask, setActiveTask] = useState(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
 
   const columns = useMemo(() => {
     const cols = {};
@@ -154,6 +158,7 @@ export default function App() {
 
       {sprint && (
         <DndContext
+          sensors={sensors}
           collisionDetection={closestCorners}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
